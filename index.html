@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache">
 <title>Life Notes</title>
 <style>
   :root { --bg:#faf8f4; --fg:#1f1d1a; --muted:#77716a; --line:#e6e1d8; --link:#2b5c8a; }
@@ -21,6 +22,7 @@
   li a { color:var(--link); text-decoration:none; font-size:1.05rem; }
   li a:hover { text-decoration:underline; }
   time { color:var(--muted); font-size:0.9rem; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  [hidden] { display:none !important; }
   .empty { color:var(--muted); padding:14px 2px; border-bottom:1px solid var(--line); }
 </style>
 </head>
@@ -36,7 +38,22 @@
   <p class="empty" id="empty">Chưa có bài nào.</p>
 </main>
 <script>
-  if (document.querySelector('#notes li')) document.getElementById('empty').remove();
+  // Hiện/ẩn dòng "Chưa có bài nào"
+  function syncEmpty() {
+    document.getElementById('empty').hidden = !!document.querySelector('#notes li');
+  }
+  syncEmpty();
+  // GitHub Pages cho trình duyệt giữ bản cũ ~10 phút.
+  // Tải ngầm bản mới nhất của chính trang này rồi cập nhật danh sách bài.
+  (async () => {
+    try {
+      const res = await fetch(location.pathname + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) return;
+      const fresh = new DOMParser().parseFromString(await res.text(), 'text/html').getElementById('notes');
+      const cur = document.getElementById('notes');
+      if (fresh && fresh.innerHTML !== cur.innerHTML) cur.innerHTML = fresh.innerHTML;
+    } catch (e) {} finally { syncEmpty(); }
+  })();
 </script>
 </body>
 </html>
