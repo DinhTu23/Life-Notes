@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Giỏi chưa đủ, phải đáng tin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,500;0,7..72,700;1,7..72,400&display=swap">
+<style>
+/* Layout: cột trái là chiếc chìa khoá (dính khi cuộn, đếm số răng đã giũa), cột phải là bài học theo phần A–F. Trên điện thoại chìa khoá nằm trên cùng. */
+:root{
+  --paper:#EFEDE7; --surface:#FAF9F5; --ink:#1E2230; --muted:#5E6272; --line:#D4D0C6;
+  --accent:#2F4A7A; --accent-soft:#E0E6F0; --seal:#A8432F; --brass:#8A6420; --metal:#C3BDB0; --metal-dark:#8C8576;
+  --f-display:"Literata", "Noto Serif", Georgia, serif;
+  --f-body:"Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12141A; --surface:#1A1D25; --ink:#E3E5EC; --muted:#9498A6; --line:#2C303B;
+    --accent:#9DB4E0; --accent-soft:#1F2636; --seal:#E58468; --brass:#E2BE78; --metal:#3F434D; --metal-dark:#666A76;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12141A; --surface:#1A1D25; --ink:#E3E5EC; --muted:#9498A6; --line:#2C303B;
+  --accent:#9DB4E0; --accent-soft:#1F2636; --seal:#E58468; --brass:#E2BE78; --metal:#3F434D; --metal-dark:#666A76;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:28px 80px}
+@media (max-width:520px){.wrap{padding-inline:16px}}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:700}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.num{font-family:var(--f-display);font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Header */
+.hero{display:grid;gap:18px;padding-block:8px 28px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.12;max-width:20ch}
+.hero p.lead{max-width:62ch;color:var(--muted);margin:0}
+.three{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;margin-top:6px}
+.three div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;height:100%}
+.three div:last-of-type{border-color:var(--brass)}
+.three b{display:block;font-family:var(--f-display);font-size:1.12rem;font-weight:700}
+.three span{font-size:.85rem;color:var(--muted)}
+.three i{font-style:normal;color:var(--muted)}
+@media (max-width:620px){.three{grid-template-columns:1fr}.three i{text-align:center;line-height:1;transform:rotate(90deg)}}
+
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:40px;align-items:start}
+@media (max-width:880px){.layout{grid-template-columns:1fr;gap:24px}}
+
+/* Key aside */
+aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:grid;gap:16px;max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+@media (max-width:880px){aside{position:static;max-height:none;overflow:visible}}
+.key-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.key-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.key-head h3{font-size:1rem}
+.count{font-variant-numeric:tabular-nums;font-family:var(--f-display);font-size:1.4rem;color:var(--brass)}
+.count small{font-size:.85rem;color:var(--muted)}
+.key-wrap{display:flex;justify-content:center}
+#key{width:100%;max-width:140px;height:auto}
+@media (max-width:880px){.key-row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:16px;align-items:center}#key{max-width:110px}}
+.k-body{fill:var(--metal);stroke:var(--metal-dark);stroke-width:1.5;transition:fill .4s}
+.k-hole{fill:var(--surface);stroke:var(--metal-dark);stroke-width:1.5}
+#key.full .k-body{fill:var(--brass);stroke:var(--brass)}
+.tooth{fill:transparent;stroke:var(--metal-dark);stroke-width:1.3;stroke-dasharray:3 3;cursor:pointer}
+.tooth-hit{fill:transparent;cursor:pointer}
+.tooth.done{fill:var(--brass);stroke:var(--brass);stroke-dasharray:none;transform-box:fill-box;transform-origin:left center;animation:file .5s ease-out}
+@keyframes file{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.key-note{font-size:.84rem;color:var(--muted);margin:10px 0 0}
+.key-note.full{color:var(--brass)}
+.mini-btn{border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 12px;font-size:.8rem;color:var(--muted);margin-top:10px}
+.mini-btn:hover{color:var(--ink);border-color:var(--muted)}
+
+.chain{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.chain h3{font-size:1rem;margin-bottom:4px}
+.chain p{font-size:.82rem;color:var(--muted);margin:0 0 10px}
+.chain-group{display:flex;flex-wrap:wrap;gap:6px;padding-block:6px;border-top:1px dashed var(--line);align-items:center}
+.chain-group:first-of-type{border-top:0}
+.chain-group .lt{font-family:var(--f-display);font-weight:700;color:var(--accent);font-size:.85rem;width:14px}
+.chip{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 10px 3px 4px;font-size:.82rem;display:inline-flex;align-items:center;gap:6px}
+.chip .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.72rem}
+.chip.done{border-color:var(--brass)}
+.chip.done .num{background:var(--brass);color:var(--surface)}
+.chip:hover{border-color:var(--accent)}
+
+/* Prologue stepper */
+.prologue{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px;margin-bottom:40px}
+@media (max-width:520px){.prologue{padding:18px}}
+.prologue .eyebrow{margin-bottom:10px}
+.frame{min-height:9.5em}
+.frame h3{font-size:1.3rem;margin-bottom:8px}
+.frame p{margin:0 0 10px;max-width:62ch}
+.frame blockquote{margin:12px 0;padding:4px 0 4px 16px;border-left:3px solid var(--accent);font-family:var(--f-display);font-style:italic;font-size:1.12rem;line-height:1.55}
+.step-ctrl{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap}
+.dots{display:flex;gap:6px}
+.dots button{width:9px;height:9px;padding:0;border-radius:50%;border:0;background:var(--line)}
+.dots button[aria-current="true"]{background:var(--accent);width:22px;border-radius:5px}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--surface);border-radius:999px;padding:7px 16px;font-size:.9rem;font-weight:500}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.35;cursor:default}
+
+/* Chapters */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:22px}
+.toolbar .chapnav{display:flex;flex-wrap:wrap;gap:6px}
+.toolbar .chapnav a{font-family:var(--f-display);font-weight:700;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 10px;font-size:.9rem}
+.toolbar .chapnav a:hover{color:var(--accent);border-color:var(--accent)}
+.chapter{margin-bottom:44px;scroll-margin-top:20px}
+.chap-head{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;align-items:baseline;margin-bottom:16px}
+.chap-num{font-family:var(--f-display);font-size:2.4rem;line-height:1;color:var(--accent);grid-row:span 2;font-weight:700}
+.chap-head h2{font-size:1.5rem}
+.chap-head p{margin:0;color:var(--muted);font-style:italic;font-family:var(--f-display)}
+.laws{display:grid;gap:10px}
+
+.law{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);scroll-margin-top:20px;transition:border-color .2s}
+.law.done{border-color:color-mix(in srgb,var(--brass) 55%,var(--line))}
+.law.key{box-shadow:inset 3px 0 0 var(--seal)}
+.law-btn{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:14px 16px}
+.glyph{width:52px;height:52px;border-radius:8px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:1.3rem}
+.law.done .glyph{background:var(--brass);color:var(--surface)}
+.law-meta{min-width:0}
+.law-meta .n{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.law-meta .n em{font-style:normal;color:var(--seal);margin-left:6px}
+.law-meta h3{font-size:1.06rem;line-height:1.35;font-weight:700}
+.law-meta .kw{font-size:.84rem;color:var(--accent)}
+.chev{display:block;flex:none;overflow:visible;width:22px;height:22px;transition:transform .25s;color:var(--muted)}
+.law[data-open="true"] .chev{transform:rotate(180deg)}
+.law-body{padding:0 16px 18px 82px}
+@media (max-width:520px){.law-body{padding:0 16px 18px 16px}.law-btn{grid-template-columns:44px minmax(0,1fr) auto;gap:12px}.glyph{width:44px;height:44px;font-size:1.1rem}}
+.law-body > *{max-width:66ch}
+.law-body ul{margin:0 0 12px;padding-left:1.1em;display:grid;gap:6px}
+.law-body li::marker{color:var(--accent)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 14px}
+.flow span{background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:3px 10px;font-size:.88rem;font-weight:500}
+.flow i{color:var(--muted);font-style:normal}
+.flow.back span{background:color-mix(in srgb,var(--seal) 12%,transparent);color:var(--seal)}
+.flow-label{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.cells{display:grid;gap:8px;margin:0 0 14px}
+.cells.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cells.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:620px){.cells.c2,.cells.c3{grid-template-columns:1fr}}
+.cell{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.92rem}
+.cell b{display:block;font-family:var(--f-display);font-size:1rem;margin-bottom:2px}
+.cell .sm{display:block;font-size:.82rem;color:var(--muted);margin-top:6px}
+.cell.hl{border-color:var(--accent)}
+.cell ul{margin:4px 0 0;gap:4px}
+.cell .miss{display:block;font-size:.82rem;color:var(--seal);margin-top:6px}
+.tip{font-size:.85rem;color:var(--muted);margin:-6px 0 14px}
+.tip b{color:var(--accent);font-weight:600}
+.pairs{display:grid;gap:6px;margin:0 0 14px}
+.pair{display:grid;grid-template-columns:minmax(0,10em) auto minmax(0,1fr);gap:10px;align-items:baseline;font-size:.93rem}
+.pair .a{font-weight:600;color:var(--accent)}
+.pair i{font-style:normal;color:var(--muted)}
+@media (max-width:520px){.pair{grid-template-columns:1fr;gap:0}.pair i{display:none}.pair{padding-bottom:6px;border-bottom:1px dashed var(--line)}}
+.qs{list-style:none;counter-reset:q;margin:0 0 14px;padding:0;display:grid;gap:8px}
+.qs li{counter-increment:q;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:baseline}
+.qs li::before{content:counter(q);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1px solid var(--accent);color:var(--accent);font-family:var(--f-display);font-weight:700;font-size:.85rem}
+.qs small{display:block;color:var(--muted);font-size:.84rem}
+.quote{font-family:var(--f-display);font-style:italic;font-size:1.08rem;line-height:1.55;margin:0 0 14px;padding:12px 16px;border-radius:8px;background:var(--paper)}
+.law-actions{display:flex;flex-wrap:wrap;gap:8px}
+.carve-btn{border:1px solid var(--brass);background:transparent;color:var(--brass);border-radius:999px;padding:6px 14px;font-size:.88rem;font-weight:500}
+.law.done .carve-btn{background:var(--brass);color:var(--surface)}
+
+/* Ending */
+.ending{border-top:1px solid var(--line);padding-top:30px;margin-top:10px}
+.ending h2{font-size:1.5rem;margin-bottom:12px}
+.ending blockquote{margin:0 0 16px;font-family:var(--f-display);font-size:1.15rem;line-height:1.6;max-width:60ch}
+.ending p{color:var(--muted);max-width:62ch}
+.seal{display:inline-grid;place-items:center;width:46px;height:46px;border:2px solid var(--seal);color:var(--seal);border-radius:6px;transform:rotate(-4deg);margin-bottom:12px}
+.ask{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--brass);border-radius:var(--r);padding:18px 20px;margin:22px 0 0;max-width:66ch}
+.ask .eyebrow{margin-bottom:6px}
+.ask p{color:var(--ink);margin:0 0 8px;font-family:var(--f-display);font-size:1.08rem;line-height:1.55}
+.ask p.after{color:var(--muted);font-family:var(--f-body);font-size:.92rem;margin:0}
+
+/* Focus card mode */
+.focus{position:fixed;inset:0;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px;z-index:20}
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;width:min(600px,100%);max-height:calc(100% - 20px);overflow:auto;padding:28px 26px 22px;box-shadow:0 20px 50px rgba(0,0,0,.18)}
+.fcard .top{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);font-size:.85rem}
+.fcard .big{font-family:var(--f-display);font-weight:700;font-size:clamp(2rem,7vw,2.8rem);line-height:1.1;color:var(--accent);text-align:center;margin:18px 0 6px;text-wrap:balance}
+.fcard .reading{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:12px}
+.fcard h3{text-align:center;font-size:1.25rem;margin-bottom:16px}
+.fcard .reveal{display:block;margin:0 auto 6px}
+.fcard .nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.x{border:0;background:none;font-size:1.4rem;line-height:1;color:var(--muted);padding:4px 8px}
+.hint{font-size:.78rem;color:var(--muted);text-align:center;margin-top:10px}
+.fcard .nav button{white-space:nowrap}
+@media (max-width:520px){.hint{display:none}.fcard{padding:22px 16px 18px}.fcard .nav{gap:6px}.fcard .nav button{padding:7px 12px;font-size:.84rem}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Bài học · Phát triển nghề nghiệp · 19 ý</div>
+    <h1>Giỏi chưa đủ, phải đáng tin</h1>
+    <p class="lead">Vì sao có người nhiều kỹ năng, bằng cấp, chứng chỉ mà sự nghiệp không tiến xa, còn có người ban đầu chẳng mấy nổi bật lại dần được giao trọng trách ngày càng lớn? Bấm vào từng ý để mở, hiểu rồi thì giũa một răng cho chiếc chìa khoá.</p>
+    <div class="three">
+      <div><b>Kỹ năng</b><span>Giúp mình làm được việc</span></div>
+      <i aria-hidden="true">→</i>
+      <div><b>Năng lực</b><span>Giúp mình tạo ra kết quả</span></div>
+      <i aria-hidden="true">→</i>
+      <div><b>Niềm tin</b><span>Khiến người khác giao việc, trao quyền</span></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside>
+      <div class="key-box">
+        <div class="key-head"><h3>Chiếc chìa khoá</h3><div class="count"><span id="cnt">0</span><small> / 19</small></div></div>
+        <div class="key-row">
+          <div class="key-wrap"><svg id="key" viewBox="0 0 170 440" role="img" aria-label="Chiếc chìa khoá với các răng đã giũa"></svg></div>
+          <div>
+            <p class="key-note" id="keyNote"></p>
+            <button class="mini-btn" id="resetBtn" type="button">Làm lại chìa khoá</button>
+          </div>
+        </div>
+      </div>
+      <div class="chain">
+        <h3>Chuỗi ghi nhớ</h3>
+        <p>19 từ khoá theo 6 phần. Đọc to từ trên xuống vài lần là thuộc khung bài.</p>
+        <div id="chain"></div>
+      </div>
+    </aside>
+
+    <main>
+      <section class="prologue" aria-label="Phần mở đầu">
+        <div class="eyebrow">Mở đầu · <span id="stepLbl">1 / 4</span></div>
+        <div class="frame" id="frame" aria-live="polite"></div>
+        <div class="step-ctrl">
+          <div class="dots" id="dots"></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn ghost" id="prev" type="button">Trước</button>
+            <button class="btn" id="next" type="button">Tiếp</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="toolbar">
+        <nav class="chapnav" id="chapnav" aria-label="Các phần"></nav>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn ghost" id="toggleAll" type="button">Mở tất cả</button>
+          <button class="btn" id="focusBtn" type="button">Học từng thẻ</button>
+        </div>
+      </div>
+
+      <div id="chapters"></div>
+
+      <section class="ending">
+        <div class="seal" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 20 3"/><path d="m16 7 3 3"/><path d="m18 5 2 2"/></svg></div>
+        <h2>Chiếc chìa khoá</h2>
+        <blockquote>“Có những cánh cửa mở ra nhờ tài năng. Nhưng chiếc chìa khoá, người ta chỉ trao cho người mình tin.”</blockquote>
+        <p>Kỹ năng giúp chúng ta làm được việc. Năng lực tổng hợp giúp chúng ta tạo ra kết quả. Còn trách nhiệm và sự chính trực giúp kết quả ấy trở thành nền tảng của niềm tin.</p>
+        <div class="ask">
+          <div class="eyebrow">Hãy tự hỏi…</div>
+          <p>Lần gần nhất có một công việc quan trọng cần người đảm nhận, sếp đã nghĩ đến ai đầu tiên? Nếu người ấy không phải mình, điều gì khiến họ yên tâm với người đó hơn?</p>
+          <p class="after">Câu trả lời có thể không dễ chịu. Nhưng đôi khi, đó lại là điểm khởi đầu tốt nhất cho một kế hoạch phát triển bản thân.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="focus" id="focus" hidden role="dialog" aria-modal="true" aria-label="Học từng thẻ">
+  <div class="fcard" id="fcard"></div>
+</div>
+
+<script>
+const CHAPTERS=[
+ {id:"A",title:"Kỹ năng không phải bộ sưu tập",sub:"Giá trị nằm ở chỗ các kỹ năng phối hợp với nhau để giải quyết vấn đề."},
+ {id:"B",title:"Đừng chỉ hỏi mình yếu gì, hãy hỏi mình cần giỏi gì",sub:"Điểm yếu nhất chưa chắc là điểm cần đầu tư trước tiên."},
+ {id:"C",title:"Từ giỏi việc đến được giao việc",sub:"Khi năng lực đã đáp ứng, khác biệt nằm ở mức độ đáng tin cậy."},
+ {id:"D",title:"Trưởng thành là khi không cần ai phải liên tục nhắc mình",sub:"Năng lực kết nối tất cả những điều trên: khả năng tự chủ."},
+ {id:"E",title:"Hãy đầu tư 90 ngày cho một sự thay đổi thật",sub:"Xuất phát từ mục tiêu, chứ không phải từ điểm yếu."},
+ {id:"F",title:"Sau cùng, người ta nhớ đến chúng ta vì điều gì?",sub:"Người ta tuyển bạn vì những gì bạn biết."}
+];
+
+/* Mỗi ý: blocks là các khối nội dung theo thứ tự hiển thị, q là câu chốt. */
+const LAWS=[
+ /* A */
+ {ch:0,kw:"Mì gói",title:"Đủ bộ dụng cụ chưa chắc nấu được bữa ngon",
+  blocks:[{t:"ul",items:["Học rất nhiều khoá: giao tiếp, lãnh đạo, quản trị thời gian, tư duy chiến lược, AI… nhưng khi trở lại công việc, cách làm vẫn gần như không thay đổi.","Giống người mua đủ bộ dụng cụ làm bếp, từ dao Nhật đến nồi Pháp, mà bữa cơm hằng ngày vẫn chỉ có mì gói.","Vấn đề không nằm ở số lượng dụng cụ, mà ở khả năng dùng chúng để nấu được một bữa ăn ngon."]}],
+  q:"Giá trị của kỹ năng không nằm ở việc kể tên được bao nhiêu kỹ năng, mà ở chỗ chúng phối hợp với nhau để giải quyết được những vấn đề gì."},
+ {ch:0,kw:"Lệch pha",title:"Một kỹ năng mạnh mà thiếu kỹ năng bổ trợ",
+  blocks:[{t:"pairs",rows:[
+    ["Phản biện, thiếu hợp tác","thành người chuyên chỉ ra cái sai của đồng nghiệp."],
+    ["Giao tiếp tốt, thiếu thực thi","mọi người hào hứng trong cuộc họp, rồi thất vọng khi chờ kết quả."],
+    ["Thành thạo AI, thiếu chuyên môn và khả năng đánh giá","báo cáo rất đẹp, rất nhanh, nhưng sai từ gốc."]]}],
+  q:"Không phải cứ cộng nhiều kỹ năng lại là tự nhiên có một người làm việc giỏi."},
+ {ch:0,kw:"Bốn nhóm",title:"Xây một hệ thống năng lực gồm bốn nhóm",tag:"khung của cả bài",
+  blocks:[{t:"cells",cols:2,cells:[
+    {h:"1 · Làm chủ bản thân",d:"Quản lý cảm xúc, sự chú ý, thời gian và hành vi của chính mình.",s:"Trí tuệ cảm xúc, quản trị thời gian"},
+    {h:"2 · Làm chủ công việc",d:"Tư duy, giải quyết vấn đề, tổ chức thực hiện và tạo ra kết quả.",s:"Giải quyết vấn đề, tư duy phản biện"},
+    {h:"3 · Làm việc với người khác",d:"Giao tiếp, hợp tác, tạo ảnh hưởng và phát triển sự tin cậy.",s:"Giao tiếp, hợp tác, lãnh đạo"},
+    {h:"4 · Liên tục phát triển",d:"Tự học, thích nghi, sử dụng công nghệ và đổi mới cách làm.",s:"Thích nghi, sử dụng AI, tự học"}]},
+   {t:"tip",html:"Mẹo nhớ bốn nhóm: <b>Mình · Việc · Người · Mới</b>. Dòng chữ nhỏ trong mỗi ô là các kỹ năng trong danh sách 10 kỹ năng thuộc nhóm ấy."}],
+  q:"Điều quan trọng hơn là xây dựng được một hệ thống năng lực, trong đó các kỹ năng bổ trợ cho nhau và cùng hướng tới việc tạo ra giá trị."},
+ {ch:0,kw:"Thực thi",title:"Năng lực thực thi, thứ ít khi được gọi tên",tag:"chỗ nhiều người giỏi bị chững lại",key:true,
+  blocks:[{t:"ul",items:["Thuộc nhóm thứ hai (làm chủ công việc), nhưng hiếm khi xuất hiện trong các danh sách kỹ năng.","Là khả năng biến suy nghĩ thành kết quả, đúng hạn và đúng chất lượng.","Dù ít được nhắc tới, nó quyết định rất nhiều."]},
+   {t:"flow",items:["Suy nghĩ","Kết quả đúng hạn","Kết quả đúng chất lượng"]}],
+  q:"Đây chính là chỗ rất nhiều người giỏi bị chững lại."},
+ {ch:0,kw:"Mắt xích",title:"Bốn nhóm không cần học tuần tự, nhưng gắn chặt với nhau",
+  blocks:[{t:"ul",items:["Người không quản lý nổi bản thân thường khó giữ cam kết.","Người không tạo ra kết quả cá nhân thường khó thuyết phục người khác tin vào năng lực của mình.","Người không chịu học hỏi sẽ dần đánh mất lợi thế."]}],
+  q:"Người không chịu học hỏi sẽ dần đánh mất lợi thế, dù từng giỏi đến đâu."},
+ /* B */
+ {ch:1,kw:"Đúng vai",title:"Đầu tư theo vai trò, không chỉ theo điểm yếu",
+  blocks:[{t:"cells",cols:2,cells:[
+    {h:"Kỹ sư phần mềm",d:"Không giỏi nói trước đám đông. Nhưng nếu công việc đòi hỏi giải những bài toán kỹ thuật phức tạp, phát triển tư duy hệ thống và khả năng giải quyết vấn đề sẽ đem lại giá trị lớn hơn nhiều."},
+    {h:"Chuyên gia sắp lên quản lý",d:"Rất giỏi chuyên môn. Nhưng vai trò mới cần ưu tiên giao tiếp, phân quyền và dẫn dắt con người, chứ không phải mải mê nâng cao chuyên môn."}]}],
+  q:"Nếu vẫn chỉ mải mê nâng cao chuyên môn, người ấy có nguy cơ trở thành một nhân viên xuất sắc mang chức danh trưởng phòng."},
+ {ch:1,kw:"Ba câu hỏi",title:"Phát triển năng lực là một quyết định đầu tư",
+  blocks:[{t:"ul",items:["Nguồn lực mỗi người đều hữu hạn: thời gian, năng lượng, tiền bạc và cả sự tập trung.","Đầu tư dàn trải vào mọi kỹ năng giúp biết thêm nhiều thứ, nhưng không thực sự xuất sắc ở điều gì."]},
+   {t:"qs",items:[["Năng lực nào đang là điểm nghẽn lớn nhất khiến tôi chưa đạt được kết quả mong muốn?",""],["Năng lực nào sẽ quan trọng nhất cho vai trò tôi muốn đảm nhận trong hai đến ba năm tới?",""],["Năng lực nào, nếu được cải thiện, sẽ kéo theo nhiều năng lực khác cùng tiến bộ?","Câu này đặc biệt đáng suy nghĩ (xem ý tiếp theo)."]]}],
+  q:"Điểm yếu nhất chưa chắc là điểm cần đầu tư trước tiên."},
+ {ch:1,kw:"Đòn bẩy",title:"Chọn năng lực đòn bẩy",
+  blocks:[{t:"pairs",rows:[
+    ["Tự học","thích nghi nhanh hơn với công nghệ."],
+    ["Quản trị cảm xúc","nâng chất lượng giao tiếp, hợp tác và lãnh đạo."],
+    ["Giải quyết vấn đề","dùng AI hiệu quả hơn, thay vì chỉ biết viết những câu lệnh thật dài."]]}],
+  q:"Phát triển bản thân không chỉ là sửa chữa những gì mình còn yếu, mà còn là chọn đúng năng lực để đầu tư, sao cho mỗi bước tiến mở ra nhiều bước tiến tiếp theo."},
+ /* C */
+ {ch:2,kw:"Hai người",title:"Nếu là quản lý, bạn giao việc quan trọng tiếp theo cho ai?",
+  blocks:[{t:"cells",cols:2,cells:[
+    {h:"Người thứ nhất",d:"Rất giỏi chuyên môn: phân tích sâu, nhiều ý tưởng, phát hiện những điểm chưa hợp lý.",s:"Nhưng thường trễ hạn, cần người khác nhắc, đôi khi kết thúc bằng một lời giải thích rất thuyết phục về lý do chưa hoàn thành."},
+    {h:"Người thứ hai",hl:true,d:"Có thể chưa giỏi bằng. Nhận việc thì làm rõ yêu cầu, xác định thời hạn, chủ động báo trở ngại và tìm cách hoàn thành.",s:"Nếu không làm được, báo sớm để cả nhóm kịp điều chỉnh."}]}],
+  q:"Năng lực chuyên môn là điều kiện cần. Nhưng khi năng lực đã đáp ứng yêu cầu, yếu tố tạo ra khác biệt thường là mức độ đáng tin cậy."},
+ {ch:2,kw:"Ba trụ",title:"Sự tin cậy dựng trên ba trụ",tag:"mấu chốt của cả bài",key:true,
+  blocks:[{t:"cells",cols:3,cells:[
+    {h:"Năng lực",d:"Bạn có thực sự biết cách làm việc ấy không?",m:"Thiếu: người khác không dám giao việc khó."},
+    {h:"Trách nhiệm",d:"Bạn có theo đuổi công việc đến cùng, kể cả khi gặp khó khăn không?",m:"Thiếu: họ phải liên tục giám sát."},
+    {h:"Chính trực",d:"Người khác có thể tin vào lời nói, thông tin và cam kết của bạn không?",m:"Thiếu: dù bạn rất giỏi, họ cũng không yên tâm trao quyền."}]}],
+  q:"Chỉ khi cả ba câu trả lời đều đủ thuyết phục, sự tin cậy mới thực sự hình thành."},
+ {ch:2,kw:"Vòng tròn",title:"Vòng tròn tích cực, và khi nó quay ngược",
+  blocks:[{t:"flowlabel",text:"Chiều thuận"},{t:"flow",items:["Có năng lực","Tạo kết quả","Xây dựng niềm tin","Được trao cơ hội","Tiếp tục trưởng thành"]},
+   {t:"ul",items:["Người càng đáng tin càng được giao việc quan trọng hơn. Những việc ấy giúp họ tích luỹ kinh nghiệm, mở rộng quan hệ và phát triển năng lực nhanh hơn."]},
+   {t:"flowlabel",text:"Chiều ngược"},{t:"flow",back:true,items:["Trễ hẹn vài lần","Bị giám sát chặt hơn","Được giao việc nhỏ hơn","Ít cơ hội học hỏi","Năng lực chậm lớn"]}],
+  q:"Có những người tiến bộ rất nhanh dù không phải người thông minh nhất ngay từ đầu, và có những người rất giỏi lại đứng yên nhiều năm."},
+ {ch:2,kw:"Môi trường",title:"Vòng tròn chỉ quay tốt ở nơi công bằng",
+  blocks:[{t:"ul",items:["Vòng tròn ấy cần một môi trường biết ghi nhận năng lực và trao cơ hội công bằng.","Có những người rất đáng tin nhưng vẫn bị giới hạn bởi cách quản lý hoặc văn hoá tổ chức.","Khi ấy, trưởng thành không chỉ là cố gắng thêm, mà còn là biết chọn môi trường nơi năng lực và sự tử tế của mình được trân trọng."]}],
+  q:"Nhưng trước khi kết luận môi trường có vấn đề, hãy thành thật soi lại ba yếu tố trên ở chính mình."},
+ /* D */
+ {ch:3,kw:"Tự chủ",title:"Tự chủ (self-leadership) là tự dẫn dắt sự phát triển của mình",tag:"năng lực kết nối tất cả",
+  blocks:[{t:"ul",items:["Rộng hơn nhóm làm chủ bản thân: không chỉ quản lý cảm xúc hay thời gian, mà tự dẫn dắt mình qua cả bốn nhóm.","Không phải thích gì làm nấy, cũng không phải tự làm tất cả và từ chối sự giúp đỡ.","Là tự xác định điều cần làm, chủ động tổ chức hành động, quản lý bản thân và chịu trách nhiệm về kết quả trong phạm vi mình kiểm soát được."]},
+   {t:"cells",cols:3,cells:[
+    {h:"Sinh viên",d:"Không đợi đến sát hạn mới bắt đầu làm bài."},
+    {h:"Nhân viên",d:"Không cần sếp nhắc từng việc nhỏ."},
+    {h:"Quản lý",d:"Không chỉ chăm chăm vào chỉ tiêu cá nhân, mà chủ động giải quyết những vấn đề ảnh hưởng đến cả đội."}]}],
+  q:"Tự chủ là chịu trách nhiệm về kết quả trong phạm vi mình có thể kiểm soát."},
+ {ch:3,kw:"Biết hỏi",title:"Tự chủ không phải là độc lập cực đoan",
+  blocks:[{t:"ul",items:["Biết mình chưa biết gì.","Biết khi nào cần hỏi, khi nào cần xin hỗ trợ.","Biết khi nào phải báo cáo một rủi ro vượt quá khả năng xử lý."]}],
+  q:"Người trưởng thành không phải người không cần ai, mà là người biết chịu trách nhiệm về phần việc của mình trong một thế giới luôn cần hợp tác."},
+ {ch:3,kw:"Rời ghế trường",title:"Rồi sẽ đến lúc không ai nhắc mình nữa",
+  blocks:[{t:"pairs",rows:[
+    ["Ở trường","thầy cô giao bài, nhắc hạn, chấm điểm."],
+    ["Đi làm","người quản lý làm tiếp một phần những việc ấy, nhưng không thể và cũng không nên làm mãi."],
+    ["Rồi sẽ đến lúc","không ai nhắc bạn đọc thêm một cuốn sách, học một công nghệ mới, cải thiện cách giao tiếp hay chuẩn bị cho vị trí cao hơn."]]}],
+  q:"Nếu không tự dẫn dắt được mình, chúng ta sẽ mãi phụ thuộc vào việc người khác có quan tâm đến sự phát triển của mình hay không."},
+ /* E */
+ {ch:4,kw:"Mục tiêu trước",title:"Bắt đầu từ một mục tiêu 12 tháng",
+  blocks:[{t:"ul",items:["Đừng vội đăng ký thêm một khoá học chỉ vì quảng cáo hấp dẫn, cũng đừng cố cải thiện cả mười kỹ năng cùng lúc.","Ví dụ mục tiêu: nhân viên kinh doanh tự quản lý được một nhóm khách hàng; kỹ sư đủ sức phụ trách một dự án nhỏ; chuyên viên sẵn sàng đảm nhận vai trò trưởng nhóm."]},
+   {t:"flow",items:["Mục tiêu nghề nghiệp 12 tháng","2 năng lực đang cản đường","Thử thách 90 ngày bằng việc thật"]}],
+  q:"Chín mươi ngày là chu kỳ đủ thực tế để thử cách làm mới và nhận phản hồi."},
+ {ch:4,kw:"Việc thật",title:"Thiết kế thử thách 90 ngày bằng công việc thật",
+  blocks:[{t:"pairs",rows:[
+    ["Giao tiếp","nhận nhiệm vụ trình bày báo cáo định kỳ và xin phản hồi sau mỗi lần."],
+    ["Giải quyết vấn đề","chọn một vấn đề đang tồn tại trong nhóm, phân tích nguyên nhân, đề xuất phương án và trực tiếp tham gia thực hiện."],
+    ["Lãnh đạo","điều phối một dự án nhỏ, nơi thành công phụ thuộc vào sự phối hợp của nhiều người chứ không chỉ nỗ lực của riêng mình."],
+    ["AI","chọn một quy trình công việc cụ thể, cải tiến nó bằng AI, đo thời gian tiết kiệm được và kiểm tra chất lượng kết quả."]]}],
+  q:"Muốn học AI thì đừng chỉ sưu tầm câu lệnh."},
+ {ch:4,kw:"Bằng chứng",title:"Sau 90 ngày, tự hỏi ba câu",
+  blocks:[{t:"qs",items:[["Tôi đã làm được điều gì mà ba tháng trước chưa làm được?",""],["Kết quả công việc tốt hơn ở đâu?",""],["Người khác có nhận thấy sự thay đổi ấy không?","Câu này đừng tự trả lời, hãy hỏi thẳng người làm việc cùng mình."]]},
+   {t:"ul",items:["Câu trả lời còn mơ hồ: có lẽ mới tích luỹ thêm kiến thức, chưa thực sự phát triển năng lực.","Đã có tiến bộ: hãy tiếp tục."]}],
+  q:"Chín mươi ngày không phải phép màu biến một người thành chuyên gia, nhưng đủ để hình thành một thói quen mới và tạo ra những bằng chứng đầu tiên về sự trưởng thành."},
+ /* F */
+ {ch:5,kw:"Người được nghĩ tới",title:"Người ta tuyển bạn vì điều bạn biết, giữ bạn vì điều bạn làm",
+  blocks:[{t:"ul",items:["Những năm đầu, ai cũng cố chứng minh mình giỏi: bằng cấp tốt, biết nhiều công cụ, nói chuyện thuyết phục, làm nhanh hơn người khác. Những điều ấy đều có giá trị.","Càng làm lâu càng thấy một thứ quan trọng hơn: sự tin cậy mà mình tạo dựng được.","Người ta tiếp tục giao việc, trao quyền, giới thiệu cơ hội và muốn đồng hành lâu dài vì những gì bạn đã làm được và cách bạn đối xử với người khác."]}],
+  q:"Đừng chỉ cố trở thành người có nhiều kỹ năng nhất trong phòng. Hãy trở thành người mà khi có việc quan trọng, người khác nghĩ đến đầu tiên, và nghĩ đến với sự yên tâm."}
+];
+const N=LAWS.length;
+
+const STORY=[
+ {h:"Mười kỹ năng cho người trẻ",p:["Bài viết “10 kỹ năng cần thiết cho người trẻ” của anh Nguyễn Tuấn Quỳnh đưa ra những lời khuyên rất thiết thực: giao tiếp, giải quyết vấn đề, quản trị cảm xúc, tư duy phản biện, sử dụng AI, khả năng tự học, kèm những hành vi cụ thể để rèn luyện mỗi ngày.","Bài ấy trả lời câu hỏi: người trẻ cần học những gì."]},
+ {h:"Một câu hỏi gặp rất thường xuyên",p:["Từ góc nhìn của người nhiều năm làm quản lý, tuyển dụng, đào tạo và tư vấn doanh nghiệp, tác giả bàn tiếp một câu hỏi khác."],q:"Tại sao có những người sở hữu rất nhiều kỹ năng, bằng cấp và chứng chỉ, nhưng sự nghiệp vẫn không tiến xa?"},
+ {h:"Và một hiện tượng ngược lại",p:["Có những người ban đầu chẳng mấy nổi bật, lại dần trở thành nhân sự không thể thiếu, được tin tưởng giao những trọng trách ngày càng lớn."]},
+ {h:"Câu trả lời",p:["Không chỉ nằm ở chúng ta giỏi những gì, mà còn ở chúng ta tạo ra giá trị gì và khiến người khác tin tưởng đến đâu. Muốn đi từ chỗ có kỹ năng đến chỗ được tin, cần qua hai bước chuyển:"],flow:["Kỹ năng","Năng lực","Niềm tin"]}
+];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pad=i=>String(i+1).padStart(2,"0");
+let done=new Set();
+try{const v=JSON.parse(localStorage.getItem("chiakhoa-done")||"[]");if(Array.isArray(v))done=new Set(v.filter(x=>Number.isInteger(x)&&x>=0&&x<N))}catch(e){}
+const save=()=>{try{localStorage.setItem("chiakhoa-done",JSON.stringify([...done]))}catch(e){}};
+const flowHTML=(items,back)=>`<div class="flow${back?" back":""}">${items.map(f=>`<span>${esc(f)}</span>`).join("<i>→</i>")}</div>`;
+
+/* ---------- Story ---------- */
+let step=0;
+function renderStory(){
+  const s=STORY[step];
+  $("#frame").innerHTML=`<h3>${esc(s.h)}</h3>${(s.p||[]).map(t=>`<p>${esc(t)}</p>`).join("")}${s.q?`<blockquote>“${esc(s.q)}”</blockquote>`:""}${s.flow?flowHTML(s.flow):""}`;
+  $("#stepLbl").textContent=`${step+1} / ${STORY.length}`;
+  $("#prev").disabled=step===0;
+  $("#next").textContent=step===STORY.length-1?"Vào bài":"Tiếp";
+  [...$("#dots").children].forEach((d,i)=>d.setAttribute("aria-current",i===step));
+}
+$("#dots").innerHTML=STORY.map((_,i)=>`<button type="button" aria-label="Đoạn ${i+1}" data-i="${i}"></button>`).join("");
+$("#dots").addEventListener("click",e=>{const b=e.target.closest("button");if(b){step=+b.dataset.i;renderStory()}});
+$("#prev").onclick=()=>{if(step>0){step--;renderStory()}};
+$("#next").onclick=()=>{if(step<STORY.length-1){step++;renderStory()}else{document.getElementById("ch-A").scrollIntoView({behavior:"smooth"})}};
+renderStory();
+
+/* ---------- Chapters & items ---------- */
+const chev=`<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
+function block(b){
+  switch(b.t){
+    case "ul":return `<ul>${b.items.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`;
+    case "flow":return flowHTML(b.items,b.back);
+    case "flowlabel":return `<p class="flow-label">${esc(b.text)}</p>`;
+    case "tip":return `<p class="tip">${b.html}</p>`;
+    case "pairs":return `<div class="pairs">${b.rows.map(r=>`<div class="pair"><span class="a">${esc(r[0])}</span><i>→</i><span>${esc(r[1])}</span></div>`).join("")}</div>`;
+    case "cells":return `<div class="cells c${b.cols}">${b.cells.map(c=>`<div class="cell${c.hl?" hl":""}"><b>${esc(c.h)}</b>${esc(c.d)}${c.s?`<span class="sm">${esc(c.s)}</span>`:""}${c.m?`<span class="miss">${esc(c.m)}</span>`:""}</div>`).join("")}</div>`;
+    case "qs":return `<ol class="qs">${b.items.map(q=>`<li><span>${esc(q[0])}${q[1]?`<small>${esc(q[1])}</small>`:""}</span></li>`).join("")}</ol>`;
+  }
+  return "";
+}
+function lawBody(l){return l.blocks.map(block).join("")+`<p class="quote">“${esc(l.q)}”</p>`}
+$("#chapters").innerHTML=CHAPTERS.map((c,ci)=>`
+  <section class="chapter" id="ch-${c.id}">
+    <div class="chap-head"><div class="chap-num">${c.id}</div><h2>${esc(c.title)}</h2><p>${esc(c.sub)}</p></div>
+    <div class="laws">${LAWS.map((l,i)=>l.ch!==ci?"":`
+      <article class="law${l.key?" key":""}" id="law-${i+1}" data-open="false">
+        <button class="law-btn" type="button" aria-expanded="false" aria-controls="body-${i}">
+          <span class="glyph num" aria-hidden="true">${pad(i)}</span>
+          <span class="law-meta"><span class="n">Ý ${i+1}${l.tag?`<em>· ${esc(l.tag)}</em>`:""}</span><h3>${esc(l.title)}</h3><span class="kw">Từ khoá: ${esc(l.kw)}</span></span>
+          ${chev}
+        </button>
+        <div class="law-body" id="body-${i}" hidden>
+          ${lawBody(l)}
+          <div class="law-actions"><button class="carve-btn" type="button" data-carve="${i}"></button></div>
+        </div>
+      </article>`).join("")}</div>
+  </section>`).join("");
+$("#chapnav").innerHTML=CHAPTERS.map(c=>`<a href="#ch-${c.id}" title="${esc(c.title)}">${c.id}</a>`).join("");
+
+function setOpen(el,open){
+  el.dataset.open=open;el.querySelector(".law-btn").setAttribute("aria-expanded",open);
+  el.querySelector(".law-body").hidden=!open;
+}
+$("#chapters").addEventListener("click",e=>{
+  const c=e.target.closest("[data-carve]");
+  if(c){toggleDone(+c.dataset.carve);return}
+  const b=e.target.closest(".law-btn");
+  if(b){const el=b.closest(".law");setOpen(el,el.dataset.open!=="true")}
+});
+let allOpen=false;
+$("#toggleAll").onclick=()=>{allOpen=!allOpen;document.querySelectorAll(".law").forEach(el=>setOpen(el,allOpen));$("#toggleAll").textContent=allOpen?"Thu gọn":"Mở tất cả"};
+function goLaw(i){const el=document.getElementById("law-"+(i+1));setOpen(el,true);el.scrollIntoView({behavior:"smooth",block:"start"})}
+
+/* ---------- Chain ---------- */
+$("#chain").innerHTML=CHAPTERS.map((c,ci)=>`<div class="chain-group"><span class="lt" aria-hidden="true">${c.id}</span>${LAWS.map((l,i)=>l.ch!==ci?"":`<button class="chip" type="button" data-go="${i}" title="Ý ${i+1}: ${esc(l.title)}"><span class="num">${i+1}</span>${esc(l.kw)}</button>`).join("")}</div>`).join("");
+$("#chain").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)goLaw(+b.dataset.go)});
+
+/* ---------- Key ---------- */
+(function drawKey(){
+  const svg=$("#key");
+  const x0=62,w=22,yTop=120,yBot=424;              /* thân chìa */
+  const lens=[22,34,16,28,40,20,30,14,26,36,18,32,24,42,16,28,34,20,26];
+  const t0=146,t1=414,gap=(t1-t0)/(N-1),h=9;
+  let html=`
+   <path class="k-body" d="M${x0} ${yTop} L${x0} ${yBot-8} Q${x0} ${yBot} ${x0+8} ${yBot} L${x0+w} ${yBot} L${x0+w} ${yTop} Z"/>
+   <circle class="k-body" cx="${x0+w/2}" cy="64" r="52"/>
+   <circle class="k-hole" cx="${x0+w/2}" cy="58" r="17"/>
+   <rect class="k-body" x="${x0-8}" y="${yTop-4}" width="${w+16}" height="12" rx="3"/>
+   <path d="M${x0+w/2} ${yTop+16} L${x0+w/2} ${yBot-10}" stroke="var(--metal-dark)" stroke-width="1" stroke-dasharray="2 6"/>`;
+  for(let i=0;i<N;i++){
+    const y=(t0+i*gap-h/2).toFixed(1), L=lens[i%lens.length];
+    html+=`<g data-go="${i}"><title>Ý ${i+1}: ${esc(LAWS[i].title)}</title><rect class="tooth" id="tooth-${i}" x="${x0+w}" y="${y}" width="${L}" height="${h}" rx="1.5"/><rect class="tooth-hit" x="${x0+w}" y="${(+y-2.5).toFixed(1)}" width="48" height="${h+5}"/></g>`;
+  }
+  svg.innerHTML=html;
+  svg.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g)goLaw(+g.dataset.go)});
+})();
+
+function refresh(){
+  LAWS.forEach((l,i)=>{
+    const d=done.has(i);
+    document.getElementById("law-"+(i+1)).classList.toggle("done",d);
+    document.querySelector(`[data-carve="${i}"]`).textContent=d?"Đã giũa răng này ✓":"Đã hiểu · giũa một răng";
+    document.getElementById("tooth-"+i).classList.toggle("done",d);
+    document.querySelector(`.chip[data-go="${i}"]`).classList.toggle("done",d);
+  });
+  $("#cnt").textContent=done.size;
+  const n=$("#keyNote"),full=done.size===N;
+  $("#key").classList.toggle("full",full);
+  n.classList.toggle("full",full);
+  n.textContent=full?"Đủ 19 răng, chiếc chìa khoá đã thành hình. Nhưng người ta chỉ trao chìa khoá cho người mình tin. Giờ là lúc làm."
+    :"Mỗi ý bạn thấy đã hiểu là một răng được giũa. Bấm vào răng mờ để tới ý đó.";
+}
+function toggleDone(i){done.has(i)?done.delete(i):done.add(i);save();refresh();if(!$("#focus").hidden)renderFocus()}
+$("#resetBtn").onclick=()=>{done.clear();save();refresh()};
+refresh();
+
+/* ---------- Focus cards ---------- */
+let fi=0,revealed=false,lastFocus=null;
+function renderFocus(){
+  const l=LAWS[fi],c=CHAPTERS[l.ch];
+  $("#fcard").innerHTML=`
+   <div class="top"><span>Phần ${c.id} · Ý ${fi+1} / ${N}</span><button class="x" id="fx" type="button" aria-label="Đóng">×</button></div>
+   <div class="big">${esc(l.kw)}</div>
+   <div class="reading">${esc(c.title)}</div>
+   <h3>${esc(l.title)}</h3>
+   ${revealed?`<div class="law-body" style="padding:0">${lawBody(l)}</div>`:`<button class="btn ghost reveal" id="frev" type="button">Thử nhớ lại ý chính, rồi bấm để xem</button>`}
+   <div class="nav">
+     <button class="btn ghost" id="fprev" type="button" ${fi===0?"disabled":""}>← Trước</button>
+     <button class="carve-btn" id="fcarve" type="button" style="${done.has(fi)?"background:var(--brass);color:var(--surface)":""}">${done.has(fi)?"Đã giũa ✓":"Giũa một răng"}</button>
+     <button class="btn" id="fnext" type="button" ${fi===N-1?"disabled":""}>Sau →</button>
+   </div>
+   <div class="hint">Phím ← → để chuyển thẻ · Space để mở ý chính · Esc để đóng</div>`;
+  $("#fx").onclick=closeFocus;
+  if($("#frev"))$("#frev").onclick=()=>{revealed=true;renderFocus()};
+  $("#fprev").onclick=()=>move(-1);$("#fnext").onclick=()=>move(1);
+  $("#fcarve").onclick=()=>toggleDone(fi);
+}
+function move(d){const n=fi+d;if(n<0||n>N-1)return;fi=n;revealed=false;renderFocus()}
+function openFocus(){lastFocus=document.activeElement;const firstNot=LAWS.findIndex((_,i)=>!done.has(i));fi=firstNot<0?0:firstNot;revealed=false;$("#focus").hidden=false;renderFocus();($("#frev")||$("#fx")).focus()}
+function closeFocus(){$("#focus").hidden=true;if(lastFocus)lastFocus.focus()}
+$("#focusBtn").onclick=openFocus;
+$("#focus").addEventListener("click",e=>{if(e.target.id==="focus")closeFocus()});
+document.addEventListener("keydown",e=>{
+  if($("#focus").hidden)return;
+  if(e.key==="Escape")closeFocus();
+  else if(e.key==="ArrowRight")move(1);
+  else if(e.key==="ArrowLeft")move(-1);
+  else if(e.key===" "&&!revealed&&e.target.tagName!=="BUTTON"){e.preventDefault();revealed=true;renderFocus()}
+});
+</script>
+
+</body>
+</html>
